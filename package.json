@@ -1,0 +1,19 @@
+{
+  "name": "backend-venta-pasajes",
+  "version": "1.0.0",
+  "description": "backend del sistema de venta de pasajes chaqueño",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrsc3/backend-venta-pasajes.git"
+  },
+  "author": "Christian Cabezas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrsc3/backend-venta-pasajes/issues"
+  },
+  "homepage": "https://github.com/chrsc3/backend-venta-pasajes#readme"
+}
