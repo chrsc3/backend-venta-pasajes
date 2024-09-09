@@ -4,7 +4,10 @@
   "description": "backend del sistema de venta de pasajes chaqueño",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_ENV=test node --test",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "start:test": "cross-env NODE_ENV=test node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,17 @@
   "bugs": {
     "url": "https://github.com/chrsc3/backend-venta-pasajes/issues"
   },
-  "homepage": "https://github.com/chrsc3/backend-venta-pasajes#readme"
+  "homepage": "https://github.com/chrsc3/backend-venta-pasajes#readme",
+  "dependencies": {
+    "@sequelize/mysql": "^7.0.0-alpha.41",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.4",
+    "sequelize": "^6.37.3"
+  }
 }
