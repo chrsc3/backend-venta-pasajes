@@ -1,11 +1,19 @@
 const bcrypt = require("bcrypt");
 const usersRouter = require("express").Router();
 require("express-async-errors");
-const User = require("../models/user");
+const { Usuarios } = require("../models");
 
 usersRouter.post("/", async (request, response, next) => {
   try {
-    const { username, name, password } = request.body;
+    const {
+      nombre,
+      apellido,
+      telefono,
+      direccion,
+      username,
+      password,
+      Roles_idRol,
+    } = request.body;
 
     // Check if username and password are provided
     if (!username || !password) {
@@ -16,15 +24,15 @@ usersRouter.post("/", async (request, response, next) => {
 
     // Check if username and password have at least 3 characters
     if (username.length < 3 || password.length < 3) {
-      return response
-        .status(400)
-        .json({
-          error: "Username and password must have at least 3 characters",
-        });
+      return response.status(400).json({
+        error: "Username and password must have at least 3 characters",
+      });
     }
 
     // Check if username is unique
-    const existingUser = await User.findOne({ username });
+    const existingUser = await Usuarios.findOne({
+      where: { user: username },
+    });
     if (existingUser) {
       return response.status(400).json({ error: "Username already exists" });
     }
@@ -32,10 +40,15 @@ usersRouter.post("/", async (request, response, next) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const user = new User({
-      username,
-      name,
-      passwordHash,
+    const user = Usuarios.build({
+      nombre,
+      apellido,
+      telefono,
+      direccion,
+      user: username,
+      password: passwordHash,
+      estado: "activo",
+      Roles_idRol,
     });
 
     const savedUser = await user.save();
@@ -46,20 +59,16 @@ usersRouter.post("/", async (request, response, next) => {
   }
 });
 usersRouter.get("/", async (request, response) => {
-  const users = await User.find({}).populate("blogs", {
-    url: 1,
-    title: 1,
-    author: 1,
-  });
+  const users = await Usuarios.findAll();
   response.json(users);
 });
 usersRouter.get("/:id", async (request, response, next) => {
   try {
-    const user = await User.findById(request.params.id);
+    const user = await Usuarios.findByPk(request.params.id);
     if (user) {
       response.json(user);
     } else {
-      response.status(404).json({ error: "User not found" });
+      response.status(404).json({ error: "Usuarios not found" });
     }
   } catch (error) {
     next(error);

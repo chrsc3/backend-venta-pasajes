@@ -7,7 +7,8 @@
     "test": "cross-env NODE_ENV=test node --test",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "cross-env NODE_ENV=production node index.js",
-    "start:test": "cross-env NODE_ENV=test node index.js"
+    "start:test": "cross-env NODE_ENV=test node index.js",
+    "model:index": "cross-env NODE_ENV=development nodemon models/index.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.0",
     "nodemon": "^3.1.4",
     "sequelize": "^6.37.3"
   }
