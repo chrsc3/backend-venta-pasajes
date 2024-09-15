@@ -4,6 +4,8 @@ const app = express();
 const cors = require("cors");
 const usersRouter = require("./controllers/user");
 const loginRouter = require("./controllers/login");
+const rolesRouter = require("./controllers/rol");
+const permisosRouter = require("./controllers/permisos");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 const { PORT } = require("./utils/config");
@@ -16,9 +18,10 @@ app.use(express.static("dist"));
 app.use(express.json());
 app.use(middleware.requestLogger);
 app.use(middleware.tokenExtractor);
-app.use("/api/users", usersRouter);
+app.use("/api/usuarios", usersRouter);
 app.use("/api/login", loginRouter);
-
+app.use("/api/roles", rolesRouter);
+app.use("/api/permisos", permisosRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 const start = async () => {

@@ -10,20 +10,20 @@ usersRouter.post("/", async (request, response, next) => {
       apellido,
       telefono,
       direccion,
-      username,
+      user,
       password,
       Roles_idRol,
     } = request.body;
 
     // Check if username and password are provided
-    if (!username || !password) {
+    if (!user || !password) {
       return response
         .status(400)
         .json({ error: "Username and password are required" });
     }
 
     // Check if username and password have at least 3 characters
-    if (username.length < 3 || password.length < 3) {
+    if (user.length < 3 || password.length < 3) {
       return response.status(400).json({
         error: "Username and password must have at least 3 characters",
       });
@@ -31,7 +31,7 @@ usersRouter.post("/", async (request, response, next) => {
 
     // Check if username is unique
     const existingUser = await Usuarios.findOne({
-      where: { user: username },
+      where: { user: user },
     });
     if (existingUser) {
       return response.status(400).json({ error: "Username already exists" });
@@ -40,18 +40,18 @@ usersRouter.post("/", async (request, response, next) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const user = Usuarios.build({
-      nombre,
-      apellido,
-      telefono,
-      direccion,
-      user: username,
+    const usermodel = Usuarios.build({
+      nombre: nombre,
+      apellido: apellido,
+      telefono: telefono,
+      direccion: direccion,
+      user: user,
       password: passwordHash,
       estado: "activo",
-      Roles_idRol,
+      Roles_idRol: Roles_idRol,
     });
 
-    const savedUser = await user.save();
+    const savedUser = await usermodel.save();
 
     response.status(201).json(savedUser);
   } catch (error) {
@@ -70,6 +70,55 @@ usersRouter.get("/:id", async (request, response, next) => {
     } else {
       response.status(404).json({ error: "Usuarios not found" });
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.put("/:id", async (request, response, next) => {
+  try {
+    const {
+      idUsuario,
+      nombre,
+      apellido,
+      telefono,
+      direccion,
+      user,
+      password,
+      estado,
+      Roles_idRol,
+    } = request.body;
+
+    const usermodel = {
+      idUsuario: idUsuario,
+      nombre: nombre,
+      apellido: apellido,
+      telefono: telefono,
+      direccion: direccion,
+      user: user,
+      password: password,
+      estado: "activo",
+      Roles_idRol: Roles_idRol,
+    };
+
+    const updatedUser = await Usuarios.update(usermodel, {
+      where: { idUsuario: request.params.id },
+    });
+    if (!updatedUser) {
+      return response.status(404).json({ error: "Usuarios not found" });
+    }
+    response.json(usermodel);
+  } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.delete("/:id", async (request, response, next) => {
+  try {
+    await Usuarios.destroy({
+      where: { idUsuario: request.params.id },
+    });
+    response.status(204).end();
   } catch (error) {
     next(error);
   }

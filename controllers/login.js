@@ -10,7 +10,7 @@ router.post("/", async (request, response) => {
 
   const user = await User.findOne({
     where: {
-      user: body.username,
+      user: body.user,
     },
   });
 
@@ -24,13 +24,13 @@ router.post("/", async (request, response) => {
   }
 
   const userForToken = {
-    username: user.username,
+    username: user.user,
     id: user.id,
   };
 
   const token = jwt.sign(userForToken, SECRET);
 
-  response.status(200).send({ token, username: user.user, name: user.nombre });
+  response.status(200).send({ token, user: user.user, name: user.nombre });
 });
 
 module.exports = router;
