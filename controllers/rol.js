@@ -19,7 +19,16 @@ rolesRouter.post("/", async (request, response, next) => {
 
     const savedRol = await rolmodel.save();
 
-    response.status(201).json(savedRol);
+    const returnRol = await Rol.findByPk(savedRol.idRol, {
+      include: [
+        {
+          model: Rol_Permiso,
+          include: [Permiso],
+        },
+      ],
+    });
+
+    response.status(201).json(returnRol);
   } catch (error) {
     next(error);
   }
@@ -82,7 +91,15 @@ rolesRouter.put("/:id", async (request, response, next) => {
         });
       });
     }
-    response.json(rolmodel);
+    const returnRol = await Rol.findByPk(rolmodel.idRol, {
+      include: [
+        {
+          model: Rol_Permiso,
+          include: [Permiso],
+        },
+      ],
+    });
+    response.json(returnRol);
   } catch (error) {
     next(error);
   }
