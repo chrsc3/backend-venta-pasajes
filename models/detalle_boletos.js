@@ -2,14 +2,32 @@ const { DataTypes, Model } = require("sequelize");
 
 const { sequelize } = require("../utils/db");
 
-class Oficina extends Model {}
+class Detalle_Boleto extends Model {}
 
-Oficina.init(
+Detalle_Boleto.init(
   {
-    idOficina: {
+    idDetalle_Boletos: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+    precio: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo precio no puede ser nulo",
+        },
+      },
+    },
+    numAsiento: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo numAsiento no puede ser nulo",
+        },
+      },
     },
     nombre: {
       type: DataTypes.STRING,
@@ -20,30 +38,12 @@ Oficina.init(
         },
       },
     },
-    ciudad: {
+    ci: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo ciudad no puede ser nulo",
-        },
-      },
-    },
-    direccion: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo direccion no puede ser nulo",
-        },
-      },
-    },
-    telefono: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo telefono no puede ser nulo",
+          msg: "El campo ci no puede ser nulo",
         },
       },
     },
@@ -56,12 +56,21 @@ Oficina.init(
         },
       },
     },
-    Ciudades_idCiudad: {
+    Viajes_idViaje: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo Ciudades_idCiudad no puede ser nulo",
+          msg: "El campo Viajes_idViaje no puede ser nulo",
+        },
+      },
+    },
+    Boletos_idBoleto: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo Boletos_idBoleto no puede ser nulo",
         },
       },
     },
@@ -69,7 +78,7 @@ Oficina.init(
   {
     sequelize,
     timestamps: false,
-    modelName: "oficinas",
+    modelName: "detalle_boletos",
   }
 );
-module.exports = Oficina;
+module.exports = Detalle_Boleto;

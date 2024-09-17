@@ -2,14 +2,23 @@ const { DataTypes, Model } = require("sequelize");
 
 const { sequelize } = require("../utils/db");
 
-class Oficina extends Model {}
+class Boleto extends Model {}
 
-Oficina.init(
+Boleto.init(
   {
-    idOficina: {
+    idBoleto: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo fecha no puede ser nulo",
+        },
+      },
     },
     nombre: {
       type: DataTypes.STRING,
@@ -20,30 +29,21 @@ Oficina.init(
         },
       },
     },
-    ciudad: {
+    ci: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo ciudad no puede ser nulo",
+          msg: "El campo ci no puede ser nulo",
         },
       },
     },
-    direccion: {
-      type: DataTypes.STRING,
+    total: {
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo direccion no puede ser nulo",
-        },
-      },
-    },
-    telefono: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo telefono no puede ser nulo",
+          msg: "El campo total no puede ser nulo",
         },
       },
     },
@@ -56,12 +56,12 @@ Oficina.init(
         },
       },
     },
-    Ciudades_idCiudad: {
+    Usuarios_idUsuario: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo Ciudades_idCiudad no puede ser nulo",
+          msg: "El campo Usuarios_idUsuario no puede ser nulo",
         },
       },
     },
@@ -69,7 +69,8 @@ Oficina.init(
   {
     sequelize,
     timestamps: false,
-    modelName: "oficinas",
+    modelName: "boletos",
   }
 );
-module.exports = Oficina;
+
+module.exports = Boleto;

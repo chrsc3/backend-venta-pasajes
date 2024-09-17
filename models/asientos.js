@@ -2,21 +2,21 @@ const { DataTypes, Model } = require("sequelize");
 
 const { sequelize } = require("../utils/db");
 
-class Ciudad extends Model {}
+class Asiento extends Model {}
 
-Ciudad.init(
+Asiento.init(
   {
-    idCiudad: {
+    idAsiento: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    nombre: {
-      type: DataTypes.STRING,
+    numAsiento: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo nombre no puede ser nulo",
+          msg: "El campo numAsiento no puede ser nulo",
         },
       },
     },
@@ -29,11 +29,20 @@ Ciudad.init(
         },
       },
     },
+    Viajes_idViaje: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo Viajes_idViaje no puede ser nulo",
+        },
+      },
+    },
   },
   {
     sequelize,
     timestamps: false,
-    modelName: "ciudades",
+    modelName: "asientos",
   }
 );
-module.exports = Ciudad;
+module.exports = Asiento;

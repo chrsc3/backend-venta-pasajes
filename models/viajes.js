@@ -2,48 +2,48 @@ const { DataTypes, Model } = require("sequelize");
 
 const { sequelize } = require("../utils/db");
 
-class Oficina extends Model {}
+class Viaje extends Model {}
 
-Oficina.init(
+Viaje.init(
   {
-    idOficina: {
+    idViaje: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    nombre: {
+    origen: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo nombre no puede ser nulo",
+          msg: "El campo origen no puede ser nulo",
         },
       },
     },
-    ciudad: {
+    destino: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo ciudad no puede ser nulo",
+          msg: "El campo destino no puede ser nulo",
         },
       },
     },
-    direccion: {
-      type: DataTypes.STRING,
+    fechaViaje: {
+      type: DataTypes.DATE,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo direccion no puede ser nulo",
+          msg: "El campo fechaViaje no puede ser nulo",
         },
       },
     },
-    telefono: {
-      type: DataTypes.STRING,
+    horaSalida: {
+      type: DataTypes.TIME,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo telefono no puede ser nulo",
+          msg: "El campo horaSalida no puede ser nulo",
         },
       },
     },
@@ -56,12 +56,30 @@ Oficina.init(
         },
       },
     },
-    Ciudades_idCiudad: {
+    Buses_idBus: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notNull: {
-          msg: "El campo Ciudades_idCiudad no puede ser nulo",
+          msg: "El campo Buses_idBus no puede ser nulo",
+        },
+      },
+    },
+    Oficinas_idOficina: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo Oficinas_idOficina no puede ser nulo",
+        },
+      },
+    },
+    Choferes_idChofer: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo Choferes_idChofer no puede ser nulo",
         },
       },
     },
@@ -69,7 +87,7 @@ Oficina.init(
   {
     sequelize,
     timestamps: false,
-    modelName: "oficinas",
+    modelName: "viajes",
   }
 );
-module.exports = Oficina;
+module.exports = Viaje;
