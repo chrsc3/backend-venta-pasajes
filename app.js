@@ -6,6 +6,7 @@ const usersRouter = require("./controllers/user");
 const loginRouter = require("./controllers/login");
 const rolesRouter = require("./controllers/rol");
 const permisosRouter = require("./controllers/permisos");
+const choferesRouter = require("./controllers/choferes");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 const { PORT } = require("./utils/config");
@@ -22,6 +23,7 @@ app.use("/api/usuarios", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/roles", rolesRouter);
 app.use("/api/permisos", permisosRouter);
+app.use("/api/choferes", choferesRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 const start = async () => {
