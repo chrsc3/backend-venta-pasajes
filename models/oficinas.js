@@ -56,15 +56,6 @@ Oficina.init(
         },
       },
     },
-    Ciudades_idCiudad: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo Ciudades_idCiudad no puede ser nulo",
-        },
-      },
-    },
   },
   {
     sequelize,

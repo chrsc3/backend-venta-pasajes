@@ -38,15 +38,6 @@ Viaje.init(
         },
       },
     },
-    horaSalida: {
-      type: DataTypes.TIME,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo horaSalida no puede ser nulo",
-        },
-      },
-    },
     estado: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -71,15 +62,6 @@ Viaje.init(
       validate: {
         notNull: {
           msg: "El campo Oficinas_idOficina no puede ser nulo",
-        },
-      },
-    },
-    Choferes_idChofer: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        notNull: {
-          msg: "El campo Choferes_idChofer no puede ser nulo",
         },
       },
     },

@@ -47,7 +47,7 @@ Bus.init(
         },
       },
     },
-    plataAlta: {
+    plantaAlta: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
@@ -56,7 +56,7 @@ Bus.init(
         },
       },
     },
-    plataBaja: {
+    plantaBaja: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {

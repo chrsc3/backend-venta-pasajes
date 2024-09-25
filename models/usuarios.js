@@ -77,6 +77,7 @@ Usuarios.init(
     Roles_idRol: {
       type: DataTypes.INTEGER,
       allowNull: false,
+
       validate: {
         notNull: {
           msg: "El campo Roles_idROl no puede ser nulo",
