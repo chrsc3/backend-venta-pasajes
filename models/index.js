@@ -6,7 +6,8 @@ const Chofer = require("./choferes");
 const Oficina = require("./oficinas");
 const Bus = require("./buses");
 const Viaje = require("./viajes");
-const Asiento = require("./asientos");
+const AsientoPa = require("./asientospa");
+const AsientoPb = require("./asientospb");
 const Detalle_Boletos = require("./detalle_boletos");
 const Boleto = require("./boletos");
 const Viaje_Chofer = require("./viajes_choferes");
@@ -30,8 +31,11 @@ Viaje_Chofer.belongsTo(Viaje, { foreignKey: "Viajes_idViaje" });
 Chofer.hasMany(Viaje_Chofer, { foreignKey: "Choferes_idChofer" });
 Viaje_Chofer.belongsTo(Chofer, { foreignKey: "Choferes_idChofer" });
 
-Viaje.hasMany(Asiento, { foreignKey: "Viajes_idViaje" });
-Asiento.belongsTo(Viaje, { foreignKey: "Viajes_idViaje" });
+Viaje.hasMany(AsientoPa, { foreignKey: "Viajes_idViaje" });
+AsientoPa.belongsTo(Viaje, { foreignKey: "Viajes_idViaje" });
+
+Viaje.hasMany(AsientoPb, { foreignKey: "Viajes_idViaje" });
+AsientoPb.belongsTo(Viaje, { foreignKey: "Viajes_idViaje" });
 
 Detalle_Boletos.belongsTo(Viaje, { foreignKey: "Viajes_idViaje" });
 Viaje.hasMany(Detalle_Boletos, { foreignKey: "Viajes_idViaje" });
@@ -46,7 +50,8 @@ module.exports = {
   Oficina,
   Bus,
   Viaje,
-  Asiento,
+  AsientoPa,
+  AsientoPb,
   Detalle_Boletos,
   Boleto,
   Viaje_Chofer,

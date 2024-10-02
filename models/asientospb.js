@@ -2,11 +2,11 @@ const { DataTypes, Model } = require("sequelize");
 
 const { sequelize } = require("../utils/db");
 
-class Asiento extends Model {}
+class AsientoPb extends Model {}
 
-Asiento.init(
+AsientoPb.init(
   {
-    idAsiento: {
+    idAsientoPb: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -29,6 +29,14 @@ Asiento.init(
         },
       },
     },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    ci: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     Viajes_idViaje: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -42,7 +50,7 @@ Asiento.init(
   {
     sequelize,
     timestamps: false,
-    modelName: "asientos",
+    modelName: "asientospb",
   }
 );
-module.exports = Asiento;
+module.exports = AsientoPb;
