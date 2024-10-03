@@ -1,7 +1,8 @@
 const viajesRouter = require("express").Router();
 require("express-async-errors");
 
-const { Viaje, Viaje_Chofer } = require("../models");
+const { Viaje, Viaje_Chofer, Bus, AsientoPa, AsientoPb } = require("../models");
+const { parseAsientos, stringifyAsientos } = require("../utils/ParserAsientos");
 
 viajesRouter.post("/", async (request, response, next) => {
   try {
@@ -25,6 +26,7 @@ viajesRouter.post("/", async (request, response, next) => {
     });
 
     const savedViaje = await viajeModel.save();
+    const bus = await Bus.findByPk(Buses_idBus);
 
     if (savedViaje.idViaje) {
       const viajeChofer1 = Viaje_Chofer.build({
@@ -40,6 +42,36 @@ viajesRouter.post("/", async (request, response, next) => {
       });
 
       await viajeChofer2.save();
+    }
+    if (bus && savedViaje) {
+      const plantaAlta = parseAsientos(bus.plantaAlta);
+      const plantaBaja = parseAsientos(bus.plantaBaja);
+      await Promise.all(
+        plantaAlta.map(async (asiento) => {
+          const asientoAlta = AsientoPa.build({
+            idAsientoPa: asiento.id,
+            Viajes_idViaje: savedViaje.idViaje,
+            numAsiento: asiento.numAsiento,
+            estado: "libre",
+            nombre: "",
+            ci: "0",
+          });
+          await asientoAlta.save();
+        })
+      );
+      await Promise.all(
+        plantaBaja.map(async (asiento) => {
+          const asientoBaja = AsientoPb.build({
+            idAsientoPb: asiento.id,
+            Viajes_idViaje: savedViaje.idViaje,
+            numAsiento: asiento.numAsiento,
+            estado: "libre",
+            nombre: "",
+            ci: "0",
+          });
+          await asientoBaja.save();
+        })
+      );
     }
 
     response.status(201).json(savedViaje);
@@ -125,7 +157,13 @@ viajesRouter.delete("/:id", async (request, response, next) => {
     const delViajeChofer = await Viaje_Chofer.destroy({
       where: { Viajes_idViaje: request.params.id },
     });
-    if (delViajeChofer) {
+    const delAsientosPa = await AsientoPa.destroy({
+      where: { idViaje: request.params.id },
+    });
+    const delAsientosPb = await AsientoPb.destroy({
+      where: { idViaje: request.params.id },
+    });
+    if (delViajeChofer && delAsientosPa && delAsientosPb) {
       await Viaje.destroy({
         where: { idViaje: request.params.id },
       });

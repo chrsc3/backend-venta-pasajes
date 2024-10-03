@@ -2,6 +2,7 @@ const busesRouter = require("express").Router();
 require("express-async-errors");
 const e = require("express");
 const { Bus } = require("../models");
+const { parseAsientos, stringifyAsientos } = require("../utils/ParserAsientos");
 
 busesRouter.post("/", async (request, response, next) => {
   try {
@@ -12,11 +13,13 @@ busesRouter.post("/", async (request, response, next) => {
       placa: placa,
       tipo: tipo,
       estado: "activo",
-      plantaAlta: plantaAlta,
-      plantaBaja: plantaBaja,
+      plantaAlta: stringifyAsientos(plantaAlta),
+      plantaBaja: stringifyAsientos(plantaBaja),
     });
 
     const savedBus = await busModel.save();
+    savedBus.plantaAlta = parseAsientos(savedBus.plantaAlta);
+    savedBus.plantaBaja = parseAsientos(savedBus.plantaBaja);
 
     response.status(201).json(savedBus);
   } catch (error) {
@@ -26,13 +29,20 @@ busesRouter.post("/", async (request, response, next) => {
 
 busesRouter.get("/", async (_, response) => {
   const buses = await Bus.findAll();
-  response.json(buses);
+  const parseBuses = buses.map((bus) => {
+    bus.plantaAlta = parseAsientos(bus.plantaAlta);
+    bus.plantaBaja = parseAsientos(bus.plantaBaja);
+    return bus;
+  });
+  response.json(parseBuses);
 });
 
 busesRouter.get("/:id", async (request, response, next) => {
   try {
     const bus = await Bus.findByPk(request.params.id);
     if (bus) {
+      bus.plantaAlta = parseAsientos(bus.plantaAlta);
+      bus.plantaBaja = parseAsientos(bus.plantaBaja);
       response.json(bus);
     } else {
       response.status(404).json({ error: "Bus not found" });
@@ -53,16 +63,19 @@ busesRouter.put("/:id", async (request, response, next) => {
       placa: placa,
       tipo: tipo,
       estado: estado,
-      plantaAlta: plantaAlta,
-      plantaBaja: plantaBaja,
+      plantaAlta: stringifyAsientos(plantaAlta),
+      plantaBaja: stringifyAsientos(plantaBaja),
     };
 
     const updatedBus = await Bus.update(busModel, {
       where: { idBus: request.params.id },
     });
+
     if (!updatedBus[0]) {
       return response.status(404).json({ error: "Bus not found" });
     }
+    busModel.plantaAlta = parseAsientos(busModel.plantaAlta);
+    busModel.plantaBaja = parseAsientos(busModel.plantaBaja);
     response.json(busModel);
   } catch (error) {
     next(error);
