@@ -6,7 +6,7 @@ class Detalle_Boleto extends Model {}
 
 Detalle_Boleto.init(
   {
-    idDetalle_Boletos: {
+    idDetalle_Boleto: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

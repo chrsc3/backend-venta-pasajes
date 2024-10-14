@@ -29,6 +29,24 @@ AsientoPa.init(
         },
       },
     },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo nombre no puede ser nulo",
+        },
+      },
+    },
+    ci: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo ci no puede ser nulo",
+        },
+      },
+    },
     Viajes_idViaje: {
       type: DataTypes.INTEGER,
       allowNull: false,

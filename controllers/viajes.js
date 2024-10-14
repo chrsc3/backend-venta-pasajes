@@ -1,7 +1,14 @@
 const viajesRouter = require("express").Router();
 require("express-async-errors");
 
-const { Viaje, Viaje_Chofer, Bus, AsientoPa, AsientoPb } = require("../models");
+const {
+  Viaje,
+  Viaje_Chofer,
+  Bus,
+  AsientoPa,
+  AsientoPb,
+  Detalle_Boleto,
+} = require("../models");
 const { parseAsientos, stringifyAsientos } = require("../utils/ParserAsientos");
 
 viajesRouter.post("/", async (request, response, next) => {
@@ -158,10 +165,13 @@ viajesRouter.delete("/:id", async (request, response, next) => {
       where: { Viajes_idViaje: request.params.id },
     });
     const delAsientosPa = await AsientoPa.destroy({
-      where: { idViaje: request.params.id },
+      where: { Viajes_idViaje: request.params.id },
     });
     const delAsientosPb = await AsientoPb.destroy({
-      where: { idViaje: request.params.id },
+      where: { Viajes_idViaje: request.params.id },
+    });
+    const delDetalleBoleto = await Detalle_Boleto.destroy({
+      where: { Viajes_idViaje: request.params.id },
     });
     if (delViajeChofer && delAsientosPa && delAsientosPb) {
       await Viaje.destroy({

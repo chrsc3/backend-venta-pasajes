@@ -31,11 +31,21 @@ AsientoPb.init(
     },
     nombre: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo nombre no puede ser nulo",
+        },
+      },
     },
     ci: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "El campo ci no puede ser nulo",
+        },
+      },
     },
     Viajes_idViaje: {
       type: DataTypes.INTEGER,

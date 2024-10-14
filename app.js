@@ -12,6 +12,7 @@ const busesRouter = require("./controllers/buses");
 const viajesRouter = require("./controllers/viajes");
 const asientospaRouter = require("./controllers/asientospa");
 const asientospbRouter = require("./controllers/asientospb");
+const boletosRouter = require("./controllers/boletos");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 const { PORT } = require("./utils/config");
@@ -34,6 +35,7 @@ app.use("/api/buses", busesRouter);
 app.use("/api/viajes", viajesRouter);
 app.use("/api/asientospa", asientospaRouter);
 app.use("/api/asientospb", asientospbRouter);
+app.use("/api/boletos", boletosRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 const start = async () => {
