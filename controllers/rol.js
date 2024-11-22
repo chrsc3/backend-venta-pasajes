@@ -84,14 +84,20 @@ rolesRouter.put("/:id", async (request, response, next) => {
       where: { Roles_idRol: request.params.id },
     });
     if (roles_has_permisos) {
-      roles_has_permisos.forEach(async (permiso) => {
-        await Rol_Permiso.create({
-          Roles_idRol: request.params.id,
-          Permisos_idPermiso: permiso,
-        });
-      });
+      await Promise.all(
+        roles_has_permisos.map(async (permiso) => {
+          await Rol_Permiso.create({
+            Roles_idRol: request.params.id,
+            Permisos_idPermiso: permiso,
+          });
+        })
+      );
     }
-    const returnRol = await Rol.findByPk(rolmodel.idRol, {
+    if (!updatedRolPermiso) {
+      return response.status(404).json({ error: "Rol not found" });
+    }
+
+    const rol = await Rol.findByPk(request.params.id, {
       include: [
         {
           model: Rol_Permiso,
@@ -99,7 +105,8 @@ rolesRouter.put("/:id", async (request, response, next) => {
         },
       ],
     });
-    response.json(returnRol);
+
+    response.json(rol);
   } catch (error) {
     next(error);
   }
@@ -119,8 +126,8 @@ rolesRouter.delete("/:id", async (request, response, next) => {
       });
     }
     if (rol_permiso.length > 0) {
-      return response.status(400).json({
-        error: "Cannot delete role with associated permissions",
+      await Rol_Permiso.destroy({
+        where: { Roles_idRol: request.params.id },
       });
     }
     await Rol.destroy({

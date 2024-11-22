@@ -48,5 +48,19 @@ boletoRouter.get("/", async (_, response) => {
   });
   response.json(ventas);
 });
+boletoRouter.get("/:idviaje", async (request, response) => {
+  const { idviaje } = request.params;
+  const Detalle = await Detalle_Boleto.findAll({
+    where: { Viajes_idViaje: idviaje },
+  });
+  const uniqueBoletos = [
+    ...new Set(Detalle.map((det) => det.Boletos_idBoleto)),
+  ];
+  const boletos = await Boleto.findAll({
+    where: { idBoleto: uniqueBoletos },
+    include: [{ model: Detalle_Boleto }],
+  });
+  response.json(boletos);
+});
 
 module.exports = boletoRouter;

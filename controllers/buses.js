@@ -85,7 +85,7 @@ busesRouter.put("/:id", async (request, response, next) => {
 busesRouter.delete("/:id", async (request, response, next) => {
   try {
     await Bus.destroy({
-      where: { id: request.params.id },
+      where: { idBus: request.params.id },
     });
     response.status(204).end();
   } catch (error) {

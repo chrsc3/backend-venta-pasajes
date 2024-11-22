@@ -4,11 +4,11 @@ const { Oficina } = require("../models");
 
 oficinasRouter.post("/", async (request, response, next) => {
   try {
-    const { nombre, cuidad, direccion, telefono } = request.body;
+    const { nombre, ciudad, direccion, telefono } = request.body;
 
     const oficinamodel = Oficina.build({
       nombre: nombre,
-      cuidad: cuidad,
+      ciudad: ciudad,
       direccion: direccion,
       telefono: telefono,
       estado: "activo",
@@ -42,13 +42,13 @@ oficinasRouter.get("/:id", async (request, response, next) => {
 
 oficinasRouter.put("/:id", async (request, response, next) => {
   try {
-    const { idOficina, nombre, cuidad, direccion, telefono, estado } =
+    const { idOficina, nombre, ciudad, direccion, telefono, estado } =
       request.body;
 
     const oficinamodel = {
       idOficina: idOficina,
       nombre: nombre,
-      cuidad: cuidad,
+      ciudad: ciudad,
       direccion: direccion,
       telefono: telefono,
       estado: estado,
