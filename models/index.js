@@ -10,6 +10,7 @@ const AsientoPa = require("./asientospa");
 const AsientoPb = require("./asientospb");
 const Detalle_Boleto = require("./detalle_boletos");
 const Boleto = require("./boletos");
+const Pago = require("./pagos");
 const Viaje_Chofer = require("./viajes_choferes");
 Rol.hasMany(Usuarios, { foreignKey: "Roles_idRol" });
 Usuarios.belongsTo(Rol, { foreignKey: "Roles_idRol" });
@@ -43,6 +44,11 @@ Detalle_Boleto.belongsTo(Boleto, { foreignKey: "Boletos_idBoleto" });
 Boleto.hasMany(Detalle_Boleto, { foreignKey: "Boletos_idBoleto" });
 Boleto.belongsTo(Usuarios, { foreignKey: "Usuarios_idUsuario" });
 Usuarios.hasMany(Boleto, { foreignKey: "Usuarios_idUsuario" });
+// Pagos relationships
+Boleto.hasMany(Pago, { foreignKey: "Boletos_idBoleto" });
+Pago.belongsTo(Boleto, { foreignKey: "Boletos_idBoleto" });
+Usuarios.hasMany(Pago, { foreignKey: "Usuarios_idUsuario" });
+Pago.belongsTo(Usuarios, { foreignKey: "Usuarios_idUsuario" });
 module.exports = {
   Usuarios,
   Rol,
@@ -56,5 +62,6 @@ module.exports = {
   AsientoPb,
   Detalle_Boleto,
   Boleto,
+  Pago,
   Viaje_Chofer,
 };

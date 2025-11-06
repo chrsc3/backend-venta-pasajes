@@ -15,6 +15,7 @@ const asientospbRouter = require("./controllers/asientospb");
 const boletosRouter = require("./controllers/boletos");
 const dashboardRouter = require("./controllers/dashboard");
 const reportesRouter = require("./controllers/reportes");
+const pagosRouter = require("./controllers/pagos");
 const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 const { PORT } = require("./utils/config");
@@ -40,6 +41,7 @@ app.use("/api/asientospb", asientospbRouter);
 app.use("/api/boletos", boletosRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/reportes", reportesRouter);
+app.use("/api/pagos", pagosRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 const start = async () => {

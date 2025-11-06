@@ -8,7 +8,11 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "start": "cross-env NODE_ENV=production node index.js",
     "start:test": "cross-env NODE_ENV=test node index.js",
-    "model:index": "cross-env NODE_ENV=development nodemon models/index.js"
+    "model:index": "cross-env NODE_ENV=development nodemon models/index.js",
+    "migrate:show": "node scripts/apply-migrations.js",
+    "migrate:apply": "node scripts/apply-migrations.js --apply",
+    "migrate:show:dev": "cross-env NODE_ENV=development node scripts/apply-migrations.js",
+    "migrate:apply:dev": "cross-env NODE_ENV=development node scripts/apply-migrations.js --apply"
   },
   "repository": {
     "type": "git",
