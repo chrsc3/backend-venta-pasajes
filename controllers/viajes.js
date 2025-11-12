@@ -157,7 +157,6 @@ viajesRouter.get("/:id", async (request, response, next) => {
 viajesRouter.put("/:id", async (request, response, next) => {
   try {
     const {
-      idViaje,
       origen,
       destino,
       fechaViaje,
@@ -167,24 +166,22 @@ viajesRouter.put("/:id", async (request, response, next) => {
       Oficinas_idOficina,
     } = request.body;
 
-    const viajeModel = {
-      idViaje: idViaje,
-      origen: origen,
-      destino: destino,
-      fechaViaje: fechaViaje,
-      horaSalida: horaSalida,
-      estado: estado,
-      Buses_idBus: Buses_idBus,
-      Oficinas_idOficina: Oficinas_idOficina,
-    };
-
-    const updatedViaje = await Viaje.update(viajeModel, {
-      where: { idViaje: request.params.id },
-    });
-    if (!updatedViaje[0]) {
+    const viaje = await Viaje.findByPk(request.params.id);
+    if (!viaje) {
       return response.status(404).json({ error: "Viaje not found" });
     }
-    response.json(viajeModel);
+
+    await viaje.update({
+      origen,
+      destino,
+      fechaViaje,
+      horaSalida,
+      estado,
+      Buses_idBus,
+      Oficinas_idOficina,
+    });
+
+    response.json(viaje);
   } catch (error) {
     next(error);
   }

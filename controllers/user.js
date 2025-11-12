@@ -78,7 +78,6 @@ usersRouter.get("/:id", async (request, response, next) => {
 usersRouter.put("/:id", async (request, response, next) => {
   try {
     const {
-      idUsuario,
       nombre,
       apellido,
       telefono,
@@ -89,25 +88,23 @@ usersRouter.put("/:id", async (request, response, next) => {
       Roles_idRol,
     } = request.body;
 
-    const usermodel = {
-      idUsuario: idUsuario,
-      nombre: nombre,
-      apellido: apellido,
-      telefono: telefono,
-      direccion: direccion,
-      user: user,
-      password: password,
-      estado: "activo",
-      Roles_idRol: Roles_idRol,
-    };
-
-    const updatedUser = await Usuarios.update(usermodel, {
-      where: { idUsuario: request.params.id },
-    });
-    if (!updatedUser) {
+    const usuario = await Usuarios.findByPk(request.params.id);
+    if (!usuario) {
       return response.status(404).json({ error: "Usuarios not found" });
     }
-    response.json(usermodel);
+
+    await usuario.update({
+      nombre,
+      apellido,
+      telefono,
+      direccion,
+      user,
+      password,
+      estado: estado || "activo",
+      Roles_idRol,
+    });
+
+    response.json(usuario);
   } catch (error) {
     next(error);
   }

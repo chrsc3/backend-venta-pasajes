@@ -66,23 +66,20 @@ rolesRouter.get("/:id", async (request, response, next) => {
 
 rolesRouter.put("/:id", async (request, response, next) => {
   try {
-    const { idRol, nombre, roles_has_permisos } = request.body;
+    const { nombre, roles_has_permisos } = request.body;
 
-    const rolmodel = {
-      idRol: idRol,
-      nombre: nombre,
-    };
-
-    const updatedRol = await Rol.update(rolmodel, {
-      where: { idRol: request.params.id },
-    });
-
-    if (!updatedRol) {
+    const rol = await Rol.findByPk(request.params.id);
+    if (!rol) {
       return response.status(404).json({ error: "Rol not found" });
     }
-    const updatedRolPermiso = await Rol_Permiso.destroy({
+
+    await rol.update({ nombre });
+
+    // Eliminar permisos existentes y crear los nuevos
+    await Rol_Permiso.destroy({
       where: { Roles_idRol: request.params.id },
     });
+
     if (roles_has_permisos) {
       await Promise.all(
         roles_has_permisos.map(async (permiso) => {
@@ -93,11 +90,8 @@ rolesRouter.put("/:id", async (request, response, next) => {
         })
       );
     }
-    if (!updatedRolPermiso) {
-      return response.status(404).json({ error: "Rol not found" });
-    }
 
-    const rol = await Rol.findByPk(request.params.id, {
+    const rolActualizado = await Rol.findByPk(request.params.id, {
       include: [
         {
           model: Rol_Permiso,
@@ -106,7 +100,7 @@ rolesRouter.put("/:id", async (request, response, next) => {
       ],
     });
 
-    response.json(rol);
+    response.json(rolActualizado);
   } catch (error) {
     next(error);
   }

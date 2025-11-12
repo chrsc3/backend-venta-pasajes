@@ -24,25 +24,27 @@ asientospaRouter.get("/:idViaje", async (request, response, next) => {
 
 asientospaRouter.put("/:id/:idViaje", async (request, response, next) => {
   try {
-    const { numAsiento, estado, nombre, ci, Viajes_idViaje } = request.body;
+    const { numAsiento, estado, nombre, ci } = request.body;
 
-    const asientomodel = {
-      numAsiento,
-      estado,
-      nombre,
-      ci,
-    };
-
-    const updatedAsiento = await AsientoPa.update(asientomodel, {
+    const asiento = await AsientoPa.findOne({
       where: {
         idAsientoPa: request.params.id,
         Viajes_idViaje: request.params.idViaje,
       },
     });
-    if (!updatedAsiento) {
+
+    if (!asiento) {
       return response.status(404).json({ error: "AsientoPa not found" });
     }
-    response.json(asientomodel);
+
+    await asiento.update({
+      numAsiento,
+      estado,
+      nombre,
+      ci,
+    });
+
+    response.json(asiento);
   } catch (error) {
     next(error);
   }

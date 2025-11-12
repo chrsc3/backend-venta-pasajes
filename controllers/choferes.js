@@ -39,23 +39,21 @@ choferesRouter.get("/:id", async (request, response, next) => {
 
 choferesRouter.put("/:id", async (request, response, next) => {
   try {
-    const { idChofer, nombre, numLicencia, telefono, estado } = request.body;
+    const { nombre, numLicencia, telefono, estado } = request.body;
 
-    const chofermodel = {
-      idChofer: idChofer,
-      nombre: nombre,
-      numLicencia: numLicencia,
-      telefono: telefono,
-      estado: estado,
-    };
-
-    const updatedChofer = await Chofer.update(chofermodel, {
-      where: { idChofer: request.params.id },
-    });
-    if (!updatedChofer) {
+    const chofer = await Chofer.findByPk(request.params.id);
+    if (!chofer) {
       return response.status(404).json({ error: "Chofer not found" });
     }
-    response.json(chofermodel);
+
+    await chofer.update({
+      nombre,
+      numLicencia,
+      telefono,
+      estado,
+    });
+
+    response.json(chofer);
   } catch (error) {
     next(error);
   }

@@ -42,25 +42,22 @@ oficinasRouter.get("/:id", async (request, response, next) => {
 
 oficinasRouter.put("/:id", async (request, response, next) => {
   try {
-    const { idOficina, nombre, ciudad, direccion, telefono, estado } =
-      request.body;
+    const { nombre, ciudad, direccion, telefono, estado } = request.body;
 
-    const oficinamodel = {
-      idOficina: idOficina,
-      nombre: nombre,
-      ciudad: ciudad,
-      direccion: direccion,
-      telefono: telefono,
-      estado: estado,
-    };
-
-    const updatedOficina = await Oficina.update(oficinamodel, {
-      where: { idOficina: request.params.id },
-    });
-    if (!updatedOficina) {
+    const oficina = await Oficina.findByPk(request.params.id);
+    if (!oficina) {
       return response.status(404).json({ error: "Oficina not found" });
     }
-    response.json(oficinamodel);
+
+    await oficina.update({
+      nombre,
+      ciudad,
+      direccion,
+      telefono,
+      estado,
+    });
+
+    response.json(oficina);
   } catch (error) {
     next(error);
   }
