@@ -13,6 +13,31 @@ boletoRouter.post("/", async (request, response, next) => {
   try {
     const { nombre, ci, total, Usuarios_idUsuario, detalleBoleto, esReserva } =
       request.body;
+
+    // Validación: no permitir ventas/reservas de viajes pasados o inactivos/cancelados
+    if (!Array.isArray(detalleBoleto) || detalleBoleto.length === 0) {
+      return response.status(400).json({ error: "detalleBoleto vacío" });
+    }
+    const viajesIds = [...new Set(detalleBoleto.map((d) => d.Viajes_idViaje))];
+    const viajes = await Viaje.findAll({ where: { idViaje: viajesIds } });
+    if (viajes.length !== viajesIds.length) {
+      return response
+        .status(400)
+        .json({ error: "Viaje asociado no encontrado" });
+    }
+    const now = new Date();
+    for (const v of viajes) {
+      if (new Date(v.fechaViaje) < now) {
+        return response.status(400).json({
+          error: "No se pueden vender boletos de viajes ya realizados",
+        });
+      }
+      if (v.estado === "inactivo" || v.estado === "cancelado") {
+        return response
+          .status(400)
+          .json({ error: "El viaje no está disponible para la venta" });
+      }
+    }
     const boletoModel = Boleto.build({
       fecha: new Date(),
       nombre: nombre,
@@ -102,6 +127,30 @@ boletoRouter.patch("/:id/confirmar", async (request, response, next) => {
       return response
         .status(400)
         .json({ error: "El boleto no es una reserva" });
+    }
+
+    // Validación: el/los viaje(s) asociados no deben estar en pasado ni inactivos
+    const viajesIds = [
+      ...new Set((boleto.detalle_boletos || []).map((d) => d.Viajes_idViaje)),
+    ];
+    if (viajesIds.length === 0) {
+      return response
+        .status(400)
+        .json({ error: "La reserva no tiene viajes asociados" });
+    }
+    const viajes = await Viaje.findAll({ where: { idViaje: viajesIds } });
+    const now = new Date();
+    for (const v of viajes) {
+      if (new Date(v.fechaViaje) < now) {
+        return response.status(400).json({
+          error: "No se puede confirmar una reserva de un viaje ya realizado",
+        });
+      }
+      if (v.estado === "inactivo" || v.estado === "cancelado") {
+        return response
+          .status(400)
+          .json({ error: "El viaje no está disponible para confirmación" });
+      }
     }
 
     // Cambiar estado del boleto de 'reserva' a 'activo'

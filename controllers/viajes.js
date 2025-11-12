@@ -1,6 +1,7 @@
 const viajesRouter = require("express").Router();
 require("express-async-errors");
 
+const { Op } = require("sequelize");
 const {
   Viaje,
   Viaje_Chofer,
@@ -87,8 +88,26 @@ viajesRouter.post("/", async (request, response, next) => {
   }
 });
 
+// Devuelve sólo viajes cuya fecha aún no pasó y estado distinto de inactivo/cancelado
 viajesRouter.get("/", async (_, response) => {
-  const viajes = await Viaje.findAll({ include: [Viaje_Chofer] });
+  const now = new Date();
+  const viajes = await Viaje.findAll({
+    where: {
+      fechaViaje: { [Op.gte]: now },
+      estado: { [Op.notIn]: ["inactivo", "cancelado"] },
+    },
+    include: [Viaje_Chofer],
+    order: [["fechaViaje", "ASC"]],
+  });
+  response.json(viajes);
+});
+
+// Ruta auxiliar para obtener todos los viajes (incluye pasados) para reportes
+viajesRouter.get("/all", async (_, response) => {
+  const viajes = await Viaje.findAll({
+    include: [Viaje_Chofer],
+    order: [["fechaViaje", "DESC"]],
+  });
   response.json(viajes);
 });
 viajesRouter.get(
@@ -119,9 +138,14 @@ viajesRouter.get(
 );
 viajesRouter.get("/:id", async (request, response, next) => {
   try {
-    const viaje = await Viaje.findByPk(request.params.id);
+    const viaje = await Viaje.findByPk(request.params.id, {
+      include: [Viaje_Chofer],
+    });
     if (viaje) {
-      response.json(viaje);
+      const isPast = new Date(viaje.fechaViaje) < new Date();
+      const viajeJSON = viaje.toJSON();
+      viajeJSON.isPast = isPast;
+      response.json(viajeJSON);
     } else {
       response.status(404).json({ error: "Viaje not found" });
     }
