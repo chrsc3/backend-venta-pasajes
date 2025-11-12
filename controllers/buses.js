@@ -54,29 +54,49 @@ busesRouter.get("/:id", async (request, response, next) => {
 
 busesRouter.put("/:id", async (request, response, next) => {
   try {
-    const { idBus, marca, placa, tipo, estado, plantaAlta, plantaBaja } =
-      request.body;
+    const { marca, placa, tipo, estado, plantaAlta, plantaBaja } = request.body;
 
-    const busModel = {
-      idBus: idBus,
-      marca: marca,
-      placa: placa,
-      tipo: tipo,
-      estado: estado,
-      plantaAlta: stringifyAsientos(plantaAlta),
-      plantaBaja: stringifyAsientos(plantaBaja),
-    };
-
-    const updatedBus = await Bus.update(busModel, {
-      where: { idBus: request.params.id },
-    });
-
-    if (!updatedBus[0]) {
+    const bus = await Bus.findByPk(request.params.id);
+    if (!bus) {
       return response.status(404).json({ error: "Bus not found" });
     }
-    busModel.plantaAlta = parseAsientos(busModel.plantaAlta);
-    busModel.plantaBaja = parseAsientos(busModel.plantaBaja);
-    response.json(busModel);
+
+    const serializeAsientos = (value) => {
+      if (Array.isArray(value)) {
+        return stringifyAsientos(value);
+      }
+      if (typeof value === "string") {
+        return value;
+      }
+      return "";
+    };
+
+    await bus.update({
+      marca,
+      placa,
+      tipo,
+      estado,
+      plantaAlta: serializeAsientos(plantaAlta),
+      plantaBaja: serializeAsientos(plantaBaja),
+    });
+
+    const toArray = (value) => {
+      if (!value) {
+        return [];
+      }
+      if (Array.isArray(value)) {
+        return value;
+      }
+      return parseAsientos(value);
+    };
+
+    const responseData = {
+      ...bus.toJSON(),
+      plantaAlta: toArray(bus.plantaAlta),
+      plantaBaja: toArray(bus.plantaBaja),
+    };
+
+    response.json(responseData);
   } catch (error) {
     next(error);
   }
