@@ -12,6 +12,10 @@ const sequelize = new Sequelize(MYSQL_DATABASE, MYSQL_USER, MYSQL_PASWORD, {
   host: MYSQL_HOST,
   port: MYSQL_PORT,
   ssl: true,
+  timezone: "-04:00", // Zona horaria de Bolivia (GMT-4)
+  dialectOptions: {
+    timezone: "-04:00",
+  },
 });
 
 const connectToDatabase = async () => {

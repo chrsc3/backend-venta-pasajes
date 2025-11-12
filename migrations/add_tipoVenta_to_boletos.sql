@@ -1,0 +1,9 @@
+-- No se requiere migración
+-- El sistema de reservas ahora usa el campo 'estado' existente
+-- 
+-- Valores posibles para estado:
+-- 'activo'  - Boleto vendido (con pago)
+-- 'reserva' - Boleto reservado (sin pago)
+-- 'anulado' - Boleto anulado
+--
+-- No es necesario ejecutar este script

@@ -1,6 +1,6 @@
 -- Migration: Create table pagos
 -- Fecha: 2025-11-06
-
+USE testchaqueñodb;
 CREATE TABLE IF NOT EXISTS `pagos` (
   `idPago` INT NOT NULL AUTO_INCREMENT,
   `monto` DECIMAL(10,2) NOT NULL,

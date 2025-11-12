@@ -96,10 +96,17 @@ viajesRouter.get(
   async (request, response, next) => {
     try {
       const { startDate, endDate } = request.params;
+
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+
       const viajes = await Viaje.findAll({
         where: {
           fechaViaje: {
-            [Op.between]: [new Date(startDate), new Date(endDate)],
+            [Op.between]: [start, end],
           },
         },
         include: [Viaje_Chofer],

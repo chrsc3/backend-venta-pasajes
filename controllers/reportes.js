@@ -12,7 +12,10 @@ reportesRouter.get("/viaje/:idviaje", async (request, response) => {
     ...new Set(Detalle.map((det) => det.Boletos_idBoleto)),
   ];
   const boletos = await Boleto.findAll({
-    where: { idBoleto: uniqueBoletos },
+    where: {
+      idBoleto: uniqueBoletos,
+      estado: "activo", // Solo boletos vendidos
+    },
     include: [
       { model: Detalle_Boleto },
       {
@@ -25,11 +28,19 @@ reportesRouter.get("/viaje/:idviaje", async (request, response) => {
 });
 reportesRouter.post("/fechas", async (request, response) => {
   const { fechaInicio, fechaFin } = request.body;
+
+  const startDate = new Date(fechaInicio);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(fechaFin);
+  endDate.setHours(23, 59, 59, 999);
+
   const boletos = await Boleto.findAll({
     where: {
       fecha: {
-        [Op.between]: [new Date(fechaInicio), new Date(fechaFin)],
+        [Op.between]: [startDate, endDate],
       },
+      estado: "activo", // Solo boletos vendidos
     },
     include: [
       { model: Detalle_Boleto },
@@ -48,8 +59,14 @@ reportesRouter.post("/viajes", async (request, response) => {
 
   const whereClause = {};
   if (fechaInicio && fechaFin) {
+    const startDate = new Date(fechaInicio);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(fechaFin);
+    endDate.setHours(23, 59, 59, 999);
+
     whereClause.fechaViaje = {
-      [Op.between]: [new Date(fechaInicio), new Date(fechaFin)],
+      [Op.between]: [startDate, endDate],
     };
   }
 
@@ -63,13 +80,17 @@ reportesRouter.post("/viajes", async (request, response) => {
     ],
   });
 
-  // Calcular estadísticas por viaje
+  // Calcular estadísticas por viaje (solo boletos vendidos)
   const reporteViajes = viajes.map((viaje) => {
     const boletos = viaje.detalle_boletos || [];
-    const totalVentas = boletos.reduce((sum, det) => {
+    // Filtrar solo boletos con estado 'activo' (vendidos)
+    const boletosVendidos = boletos.filter(
+      (det) => det.boleto?.estado === "activo"
+    );
+    const totalVentas = boletosVendidos.reduce((sum, det) => {
       return sum + Number(det.boleto?.total || 0);
     }, 0);
-    const asientosVendidos = boletos.length;
+    const asientosVendidos = boletosVendidos.length;
 
     return {
       idViaje: viaje.idViaje,
@@ -78,8 +99,9 @@ reportesRouter.post("/viajes", async (request, response) => {
       fechaViaje: viaje.fechaViaje,
       asientosVendidos,
       totalVentas: Number(totalVentas.toFixed(2)),
-      cantidadBoletos: [...new Set(boletos.map((b) => b.Boletos_idBoleto))]
-        .length,
+      cantidadBoletos: [
+        ...new Set(boletosVendidos.map((b) => b.Boletos_idBoleto)),
+      ].length,
     };
   });
 
@@ -92,8 +114,14 @@ reportesRouter.post("/usuarios", async (request, response) => {
 
   const whereClause = {};
   if (fechaInicio && fechaFin) {
+    const startDate = new Date(fechaInicio);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(fechaFin);
+    endDate.setHours(23, 59, 59, 999);
+
     whereClause.fecha = {
-      [Op.between]: [new Date(fechaInicio), new Date(fechaFin)],
+      [Op.between]: [startDate, endDate],
     };
   }
 
@@ -101,20 +129,27 @@ reportesRouter.post("/usuarios", async (request, response) => {
     include: [
       {
         model: Boleto,
-        where: whereClause,
+        where: {
+          ...whereClause,
+          estado: "activo", // Solo boletos vendidos
+        },
         required: false,
       },
     ],
   });
 
-  // Calcular estadísticas por usuario
+  // Calcular estadísticas por usuario (solo boletos vendidos)
   const reporteUsuarios = usuarios
     .map((usuario) => {
       const boletos = usuario.boletos || [];
-      const totalVentas = boletos.reduce((sum, boleto) => {
+      // Filtrar solo boletos con estado 'activo' (vendidos)
+      const boletosVendidos = boletos.filter(
+        (boleto) => boleto.estado === "activo"
+      );
+      const totalVentas = boletosVendidos.reduce((sum, boleto) => {
         return sum + Number(boleto.total || 0);
       }, 0);
-      const cantidadBoletos = boletos.length;
+      const cantidadBoletos = boletosVendidos.length;
 
       return {
         idUsuario: usuario.idUsuario,

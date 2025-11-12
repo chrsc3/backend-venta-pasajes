@@ -26,6 +26,7 @@ boletoRouter.get("/ventasDia", async (request, response) => {
       fecha: {
         [Op.between]: [today, tomorrow],
       },
+      estado: "activo", // Solo boletos vendidos
     },
   });
   const viajesMap = {};
@@ -60,7 +61,7 @@ boletoRouter.get("/ventasSemana", async (request, response) => {
   const startOfWeek = new Date(today);
   startOfWeek.setDate(today.getDate() - 7);
   startOfWeek.setHours(0, 0, 0, 0);
-  
+
   const endOfWeek = new Date(today);
   endOfWeek.setHours(23, 59, 59, 999);
 
@@ -80,6 +81,7 @@ boletoRouter.get("/ventasSemana", async (request, response) => {
       fecha: {
         [Op.between]: [startOfWeek, endOfWeek],
       },
+      estado: "activo", // Solo boletos vendidos
     },
   });
 
@@ -96,7 +98,7 @@ boletoRouter.get("/ventasSemana", async (request, response) => {
   response.json({
     totalRecaudado,
     totalPasajeros,
-    totalBoletos: ventas.length
+    totalBoletos: ventas.length,
   });
 });
 
@@ -122,6 +124,7 @@ boletoRouter.get("/ventasMes", async (request, response) => {
       fecha: {
         [Op.between]: [startOfMonth, endOfMonth],
       },
+      estado: "activo", // Solo boletos vendidos
     },
   });
 
@@ -138,24 +141,24 @@ boletoRouter.get("/ventasMes", async (request, response) => {
   response.json({
     totalRecaudado,
     totalPasajeros,
-    totalBoletos: ventas.length
+    totalBoletos: ventas.length,
   });
 });
 
 boletoRouter.get("/estadisticas", async (request, response) => {
   // Total de buses
   const totalBuses = await Bus.count();
-  
+
   // Total de choferes
   const totalChoferes = await Chofer.count();
-  
+
   // Total de viajes programados
   const totalViajes = await Viaje.count();
-  
+
   // Ruta más popular (últimos 30 días)
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
+
   const ventasRutas = await Boleto.findAll({
     include: [
       {
@@ -172,6 +175,7 @@ boletoRouter.get("/estadisticas", async (request, response) => {
       fecha: {
         [Op.gte]: thirtyDaysAgo,
       },
+      estado: "activo", // Solo boletos vendidos
     },
   });
 
@@ -184,7 +188,7 @@ boletoRouter.get("/estadisticas", async (request, response) => {
   });
 
   const rutaMasPopular = Object.entries(rutasMap).reduce(
-    (max, [ruta, count]) => count > max.count ? { ruta, count } : max,
+    (max, [ruta, count]) => (count > max.count ? { ruta, count } : max),
     { ruta: "N/A", count: 0 }
   );
 
@@ -192,7 +196,7 @@ boletoRouter.get("/estadisticas", async (request, response) => {
     totalBuses,
     totalChoferes,
     totalViajes,
-    rutaMasPopular
+    rutaMasPopular,
   });
 });
 module.exports = boletoRouter;
