@@ -79,6 +79,10 @@ Boleto.init(
         },
       },
     },
+    Clientes_idCliente: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     sequelize,

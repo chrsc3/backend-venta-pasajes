@@ -11,8 +11,15 @@ const {
 
 boletoRouter.post("/", async (request, response, next) => {
   try {
-    const { nombre, ci, total, Usuarios_idUsuario, detalleBoleto, esReserva } =
-      request.body;
+    const {
+      nombre,
+      ci,
+      total,
+      Usuarios_idUsuario,
+      detalleBoleto,
+      esReserva,
+      Clientes_idCliente,
+    } = request.body;
 
     // Validación: no permitir ventas/reservas de viajes pasados o inactivos/cancelados
     if (!Array.isArray(detalleBoleto) || detalleBoleto.length === 0) {
@@ -38,13 +45,28 @@ boletoRouter.post("/", async (request, response, next) => {
           .json({ error: "El viaje no está disponible para la venta" });
       }
     }
+    let finalNombre = nombre;
+    let finalCi = ci;
+    // Si viene Clientes_idCliente, sobrescribir datos
+    if (Clientes_idCliente) {
+      const { Cliente } = require("../models");
+      const cliente = await Cliente.findByPk(Clientes_idCliente);
+      if (cliente) {
+        finalNombre = [cliente.nombre, cliente.apellido]
+          .filter(Boolean)
+          .join(" ");
+        finalCi = cliente.ci;
+      }
+    }
+
     const boletoModel = Boleto.build({
       fecha: new Date(),
-      nombre: nombre,
-      ci: ci,
+      nombre: finalNombre,
+      ci: finalCi,
       total: total,
       estado: esReserva ? "reserva" : "activo",
       Usuarios_idUsuario: Usuarios_idUsuario,
+      Clientes_idCliente: Clientes_idCliente || null,
     });
 
     const savedBoleto = await boletoModel.save();
@@ -52,11 +74,13 @@ boletoRouter.post("/", async (request, response, next) => {
       await Promise.all(
         detalleBoleto.map(async (detalle) => {
           // Crear detalle del boleto
+          const detalleNombre = finalNombre || detalle.nombre;
+          const detalleCi = finalCi || detalle.ci;
           const detalleBoletoModel = Detalle_Boleto.build({
             precio: detalle.precio,
             numAsiento: detalle.numAsiento,
-            nombre: detalle.nombre,
-            ci: detalle.ci,
+            nombre: detalleNombre,
+            ci: detalleCi,
             estado: "activo",
             Boletos_idBoleto: savedBoleto.idBoleto,
             Viajes_idViaje: detalle.Viajes_idViaje,
@@ -70,8 +94,8 @@ boletoRouter.post("/", async (request, response, next) => {
           await AsientoPa.update(
             {
               estado: estadoAsiento,
-              nombre: detalle.nombre,
-              ci: detalle.ci,
+              nombre: detalleNombre,
+              ci: detalleCi,
             },
             {
               where: {
@@ -86,8 +110,8 @@ boletoRouter.post("/", async (request, response, next) => {
           await AsientoPb.update(
             {
               estado: estadoAsiento,
-              nombre: detalle.nombre,
-              ci: detalle.ci,
+              nombre: detalleNombre,
+              ci: detalleCi,
             },
             {
               where: {
